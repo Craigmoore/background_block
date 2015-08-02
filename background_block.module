@@ -1,0 +1,74 @@
+<?php
+
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+/**
+ * Implements hook_menu().
+ */
+function background_block_menu() {
+    
+  // For managing different types of media and the fields associated with them.
+  $items['admin/config/media/background_block'] = array(
+    'title' => 'Background Block',
+    'description' => 'Configure blocks to be background blocks.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('background_block_admin_config'),
+    'access arguments' => array('administer blocks'),
+    'file' => 'includes/background_block.admin.inc',
+  );
+  
+  return $items; 
+}
+
+function background_block_block_view_alter(&$data, $block) {
+
+  $background_blocks = variable_get('background_blocks', array());
+  
+  global $theme_key;
+  
+  if (in_array('' . $block->bid, $background_blocks)) {
+
+    $new_content_array = array();
+    
+    if (is_array($data['content'])) {
+        foreach($data['content'] as $content_key => $content_item) {
+            $new_content_array[$content_key] = $content_item;
+            unset($data['content'][$content_key]);
+        }
+    }
+    else {
+        $new_content_array['string_content'] = array(
+          '#markup' => $data['content']
+        );
+        $data['content'] = array();
+    }
+    
+    $data['content']['background_block'] = $new_content_array;
+    $data['content']['background_block']['#type'] = 'container';
+      
+    $background_block_class = drupal_html_class('background block ' . $block->bid);
+    
+    $base_settings = array(
+      'background_block' => array(
+        $background_block_class
+      ),
+    );
+
+    $background_block_path = drupal_get_path('module', 'background_block');
+
+    // Attach settings to element to be accumulated into page settings
+    $data['content']['background_block']['#attached']['js'][] = array(
+      'data' => $base_settings,
+      'type' => 'setting',
+    );
+    $data['content']['background_block']['#attached']['js'][] = $background_block_path . '/js/background_block.js';
+    $data['content']['background_block']['#attributes']['class'][] = $background_block_class;
+    //$data['content']['background_block']['#prefix'] = "<div class='$background_block_class'>";
+    //$data['content']['background_block']['#suffix'] = "</div>";
+
+  }
+
+}

@@ -1,0 +1,6 @@
+name = "Background Block"
+description = "Module to adapt to block to background, stretched to 100% width / height"
+core = "7.x"
+
+files[] = "js/background_block.js"
+
