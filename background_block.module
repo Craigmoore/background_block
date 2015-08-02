@@ -1,10 +1,5 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  * Implements hook_menu().
  */
@@ -23,11 +18,13 @@ function background_block_menu() {
   return $items; 
 }
 
+/**
+ * Implements hook_block_view_alter().
+ */
+
 function background_block_block_view_alter(&$data, $block) {
 
   $background_blocks = variable_get('background_blocks', array());
-  
-  global $theme_key;
   
   if (in_array('' . $block->bid, $background_blocks)) {
 
@@ -66,9 +63,5 @@ function background_block_block_view_alter(&$data, $block) {
     );
     $data['content']['background_block']['#attached']['js'][] = $background_block_path . '/js/background_block.js';
     $data['content']['background_block']['#attributes']['class'][] = $background_block_class;
-    //$data['content']['background_block']['#prefix'] = "<div class='$background_block_class'>";
-    //$data['content']['background_block']['#suffix'] = "</div>";
-
   }
-
 }
